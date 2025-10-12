@@ -12,16 +12,14 @@ pub enum Error {
     #[snafu(display("Could not decode response fdr {url}"))]
     #[snafu(visibility(pub(crate)))]
     ResponseDecodeError { source: FromUtf8Error, url: String },
-    #[snafu(display("Could not find element {name} with attr '{attr:?}'"))]
+    #[snafu(display("Could not find Artist/track/album with url: {url}"))]
     #[snafu(visibility(pub(crate)))]
-    ElementNotFound {
-        name: &'static str,
-        attr: Option<&'static str>,
+    NotFoundError {
+        url: String,
     },
-    #[snafu(display("Invalid URL: {url}, expected one of {expected:?}"))]
+    #[snafu(display("Invalid Artist/track/album url: {url}"))]
     #[snafu(visibility(pub(crate)))]
     InvalidUrlError {
         url: String,
-        expected: Vec<&'static str>,
     },
 }

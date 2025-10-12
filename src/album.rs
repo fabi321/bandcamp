@@ -5,6 +5,7 @@ use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use snafu::ResultExt;
 use std::collections::HashMap;
+use std::io::Write;
 
 const ALBUMS_URL: &'static str = "https://bandcamp.com/api/mobile/25/tralbum_details";
 
@@ -79,7 +80,15 @@ pub struct AlbumTag {
     pub is_location: bool,
     #[serde(rename = "loc_id")]
     pub location_id: Option<u64>,
-    pub geoname: Option<String>,
+    pub geoname: Option<AlbumTagGeoname>,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+pub struct AlbumTagGeoname {
+    pub id: u64,
+    pub name: String,
+    #[serde(rename = "fullname")]
+    pub full_name: String,
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
@@ -136,6 +145,8 @@ pub fn fetch_track(band_id: u64, album_id: u64) -> Result<Album, Error> {
         ALBUMS_URL
     );
     let (content, _) = get_url(url)?;
+    let mut file = std::fs::File::create("result.json").unwrap();
+    file.write_all(content.as_bytes()).unwrap();
     serde_json::from_str(&content).context(SerdeSnafu)
 }
 
@@ -153,5 +164,10 @@ mod tests {
     fn test_track() {
         let result = fetch_track(3752216131, 3279776665).unwrap();
         assert_eq!(result.title, "Children of the Ancient Forests".to_string());
+    }
+
+    #[test]
+    fn test_geo_location() {
+        fetch_track(989192576, 1585846251).unwrap();
     }
 }

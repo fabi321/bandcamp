@@ -3,6 +3,7 @@ use crate::util::get_url;
 use serde::{Deserialize, Deserializer};
 use snafu::ResultExt;
 use std::io::Write;
+use url::form_urlencoded::byte_serialize;
 
 const SEARCH_ENDPOINT: &str = "https://bandcamp.com/api/fuzzysearch/2/app_autocomplete";
 
@@ -43,8 +44,8 @@ pub struct SearchResultItemArtist {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct BandcampUrl {
-    artist_url: String,
-    item_url: String,
+    pub artist_url: String,
+    pub item_url: String,
 }
 
 fn split_bandcamp_url<'de, D>(deserializer: D) -> Result<BandcampUrl, D::Error>
@@ -76,7 +77,7 @@ pub struct SearchResultItemAlbum {
     pub band_id: u64,
     pub band_name: String,
     #[serde(deserialize_with = "split_bandcamp_url")]
-    url: BandcampUrl,
+    pub url: BandcampUrl,
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
@@ -91,7 +92,7 @@ pub struct SearchResultItemTrack {
     pub album_id: Option<u64>,
     pub album_name: Option<String>,
     #[serde(deserialize_with = "split_bandcamp_url")]
-    url: BandcampUrl,
+    pub url: BandcampUrl,
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
@@ -129,9 +130,10 @@ impl ImageId {
 }
 
 pub fn search(query: &str) -> Result<Vec<SearchResultItem>, Error> {
+    let escaped_query: String = byte_serialize(query.as_bytes()).collect();
     let (result, _) = get_url(format!(
         "{}?q={}&param_with_locations=true",
-        SEARCH_ENDPOINT, query
+        SEARCH_ENDPOINT, escaped_query
     ))?;
     let mut file = std::fs::File::create("result.json").unwrap();
     file.write_all(result.as_bytes()).unwrap();
