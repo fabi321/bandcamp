@@ -1,0 +1,27 @@
+use snafu::prelude::*;
+use std::string::FromUtf8Error;
+
+#[derive(Debug, Snafu)]
+pub enum Error {
+    #[snafu(display("Could not fetch page {url}"))]
+    #[snafu(visibility(pub(crate)))]
+    RequestError { source: curl::Error, url: String },
+    #[snafu(display("Could not parse response"))]
+    #[snafu(visibility(pub(crate)))]
+    SerdeError { source: serde_json::Error },
+    #[snafu(display("Could not decode response fdr {url}"))]
+    #[snafu(visibility(pub(crate)))]
+    ResponseDecodeError { source: FromUtf8Error, url: String },
+    #[snafu(display("Could not find element {name} with attr '{attr:?}'"))]
+    #[snafu(visibility(pub(crate)))]
+    ElementNotFound {
+        name: &'static str,
+        attr: Option<&'static str>,
+    },
+    #[snafu(display("Invalid URL: {url}, expected one of {expected:?}"))]
+    #[snafu(visibility(pub(crate)))]
+    InvalidUrlError {
+        url: String,
+        expected: Vec<&'static str>,
+    },
+}
