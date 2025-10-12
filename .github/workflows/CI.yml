@@ -44,6 +44,9 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          before-script-linux: |
+            # If we're running on debian-based system.
+            sudo apt update -y && sudo apt-get install -y libssl-dev openssl pkg-config
           target: ${{ matrix.platform.target }}
           args: --manifest-path python_bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
@@ -75,6 +78,9 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          before-script-linux: |
+            # If we're running on debian-based system.
+            sudo apt update -y && sudo apt-get install -y libssl-dev openssl pkg-config
           target: ${{ matrix.platform.target }}
           args: --manifest-path python_bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
