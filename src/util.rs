@@ -1,5 +1,6 @@
 use crate::error::{Error, RequestSnafu, ResponseDecodeSnafu};
 use curl::easy::Easy;
+use serde::{Deserialize, Deserializer};
 use snafu::ResultExt;
 
 fn inner_get(url: &str) -> Result<(Vec<u8>, Option<String>), curl::Error> {
@@ -25,4 +26,13 @@ pub(crate) fn get_url(url: String) -> Result<(String, Option<String>), Error> {
         inner_get(&url).with_context(|_| RequestSnafu { url: url.clone() })?;
     let result = String::from_utf8(content).with_context(|_| ResponseDecodeSnafu { url })?;
     Ok((result, actual_url))
+}
+
+pub(crate) fn null_as_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de> + Default,
+{
+    let opt = Option::<T>::deserialize(deserializer)?;
+    Ok(opt.unwrap_or_default())
 }

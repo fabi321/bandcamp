@@ -2,7 +2,6 @@ use crate::error::{Error, SerdeSnafu};
 use crate::util::get_url;
 use serde::{Deserialize, Deserializer};
 use snafu::ResultExt;
-use std::io::Write;
 use url::form_urlencoded::byte_serialize;
 
 const SEARCH_ENDPOINT: &str = "https://bandcamp.com/api/fuzzysearch/2/app_autocomplete";
@@ -14,6 +13,7 @@ struct SearchResult {
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
 #[serde(tag = "type")]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub enum SearchResultItem {
     #[serde(rename = "b")]
     Artist(SearchResultItemArtist),
@@ -26,6 +26,7 @@ pub enum SearchResultItem {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub struct SearchResultItemArtist {
     #[serde(rename = "id")]
     pub artist_id: u64,
@@ -35,14 +36,15 @@ pub struct SearchResultItemArtist {
     #[serde(default)]
     pub location: Option<String>,
     pub is_label: bool,
-    #[serde(default, rename = "tag_names")]
+    #[serde(default, rename = "tag_names", deserialize_with = "crate::util::null_as_default")]
     pub tags: Vec<String>,
     #[serde(rename = "genre_name")]
-    pub genre: String,
+    pub genre: Option<String>,
     pub url: String,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub struct BandcampUrl {
     pub artist_url: String,
     pub item_url: String,
@@ -68,6 +70,7 @@ where
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub struct SearchResultItemAlbum {
     #[serde(rename = "id")]
     pub album_id: u64,
@@ -81,6 +84,7 @@ pub struct SearchResultItemAlbum {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub struct SearchResultItemTrack {
     #[serde(rename = "id")]
     pub track_id: u64,
@@ -96,6 +100,7 @@ pub struct SearchResultItemTrack {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub struct SearchResultItemFan {
     #[serde(rename = "id")]
     pub fan_id: u64,
@@ -109,6 +114,7 @@ pub struct SearchResultItemFan {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct ImageId {
     #[serde(default)]
     image_id: Option<u64>,
@@ -118,6 +124,7 @@ pub struct ImageId {
     art_id: Option<u64>,
 }
 
+#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
 impl ImageId {
     pub fn get_image_id(&self) -> Option<u64> {
         self.image_id.or(self.img_id.or(self.art_id))
@@ -135,8 +142,6 @@ pub fn search(query: &str) -> Result<Vec<SearchResultItem>, Error> {
         "{}?q={}&param_with_locations=true",
         SEARCH_ENDPOINT, escaped_query
     ))?;
-    let mut file = std::fs::File::create("result.json").unwrap();
-    file.write_all(result.as_bytes()).unwrap();
     let result: SearchResult = serde_json::from_str(&result).context(SerdeSnafu)?;
     Ok(result.results)
 }
@@ -148,5 +153,10 @@ mod tests {
     #[test]
     fn test_works() {
         search("Meschera").unwrap();
+    }
+
+    #[test]
+    fn test_foo() {
+        search("foo").unwrap();
     }
 }
