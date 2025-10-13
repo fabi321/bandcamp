@@ -11,7 +11,7 @@ const ALBUMS_URL: &'static str = "https://bandcamp.com/api/mobile/25/tralbum_det
 
 /// Single track or album
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct Album {
     /// Track or album id
     pub id: u64,
@@ -53,7 +53,7 @@ pub struct Album {
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq, eq_int))]
 pub enum AlbumType {
     #[serde(rename = "a")]
     Album,
@@ -62,7 +62,7 @@ pub enum AlbumType {
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct AlbumBand {
     #[serde(rename = "band_id")]
     pub id: u64,
@@ -74,7 +74,7 @@ pub struct AlbumBand {
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct AlbumTag {
     pub name: String,
     #[serde(rename = "norm_name")]
@@ -88,7 +88,7 @@ pub struct AlbumTag {
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct AlbumTagGeoname {
     pub id: u64,
     pub name: String,
@@ -97,7 +97,7 @@ pub struct AlbumTagGeoname {
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct AlbumTrack {
     #[serde(rename = "track_id")]
     pub id: u64,
@@ -123,7 +123,7 @@ pub struct AlbumTrack {
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct PurchaseOptions {
     pub is_set_price: bool,
     pub price: Option<f32>,

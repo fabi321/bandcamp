@@ -8,7 +8,7 @@ use snafu::ResultExt;
 const ARTISTS_URL: &'static str = "https://bandcamp.com/api/mobile/25/band_details";
 
 #[derive(Debug, Deserialize, Clone, Eq, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct Artist {
     pub id: u64,
     pub name: String,
@@ -27,14 +27,14 @@ pub struct Artist {
 }
 
 #[derive(Debug, Deserialize, Clone, Eq, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct ArtistSite {
     pub title: String,
     pub url: String,
 }
 
 #[derive(Debug, Deserialize, Clone, Eq, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct ArtistDiscographyEntry {
     #[serde(rename = "item_id")]
     pub id: u64,
@@ -54,7 +54,7 @@ pub struct ArtistDiscographyEntry {
 
 #[derive(Debug, Deserialize, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq, eq_int))]
 pub enum ArtistDiscographyEntryType {
     Album,
     Track,
@@ -62,7 +62,7 @@ pub enum ArtistDiscographyEntryType {
 
 /// Artist entry for a label
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct LabelArtist {
     pub id: u64,
     pub name: String,

@@ -13,7 +13,6 @@ struct SearchResult {
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
 #[serde(tag = "type")]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
 pub enum SearchResultItem {
     #[serde(rename = "b")]
     Artist(SearchResultItemArtist),
@@ -26,7 +25,7 @@ pub enum SearchResultItem {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct SearchResultItemArtist {
     #[serde(rename = "id")]
     pub artist_id: u64,
@@ -48,7 +47,7 @@ pub struct SearchResultItemArtist {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct BandcampUrl {
     pub artist_url: String,
     pub item_url: String,
@@ -74,7 +73,7 @@ where
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct SearchResultItemAlbum {
     #[serde(rename = "id")]
     pub album_id: u64,
@@ -88,7 +87,7 @@ pub struct SearchResultItemAlbum {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct SearchResultItemTrack {
     #[serde(rename = "id")]
     pub track_id: u64,
@@ -104,7 +103,7 @@ pub struct SearchResultItemTrack {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all))]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(get_all, eq))]
 pub struct SearchResultItemFan {
     #[serde(rename = "id")]
     pub fan_id: u64,
