@@ -31,10 +31,12 @@ for result in search_results:
 ### Rust search API
 
 ```rust
+use bandcamp::*;
+
 fn main() {
-    let search_results = bandcamp::search("foo").unwrap();
+    let search_results = search("foo").unwrap();
     for result in search_results {
-        if let bandcamp::SearchResultItem::Album(album) = result {
+        if let SearchResultItem::Album(album) = result {
             println!("Got album {}", album.name);
         }
     }
