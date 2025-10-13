@@ -2,6 +2,14 @@
 
 If you find any Artist/Album/Track that does not work, feel free to open an issue.
 
+## Installing
+
+```commandline
+cargo add bandcamp
+
+pip install bandcamp_lib
+```
+
 ## How to use
 
 The Rust API and Python API are identical except for search results.
