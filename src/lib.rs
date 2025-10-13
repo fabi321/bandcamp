@@ -26,12 +26,12 @@ use snafu::OptionExt;
 
 lazy_static! {
     static ref ARTIST_URL: Regex =
-        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp_lib.com").expect("invalid regex");
     static ref ALBUM_URL: Regex =
-        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)")
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp_lib.com/album/([a-z-0-9]+)")
             .expect("invalid regex");
     static ref TRACK_URL: Regex =
-        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)")
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp_lib.com/track/([a-z-0-9]+)")
             .expect("invalid regex");
 }
 
@@ -103,16 +103,16 @@ mod tests {
 
     #[test]
     fn test_get_artist_from_url() {
-        artist_from_url("myrkur.bandcamp.com").unwrap();
+        artist_from_url("myrkur.bandcamp_lib.com").unwrap();
     }
 
     #[test]
     fn test_get_album_from_url() {
-        album_from_url("myrkur.bandcamp.com/album/spine").unwrap();
+        album_from_url("myrkur.bandcamp_lib.com/album/spine").unwrap();
     }
 
     #[test]
     fn test_get_track_from_url() {
-        track_from_url("myrkur.bandcamp.com/track/like-humans").unwrap();
+        track_from_url("myrkur.bandcamp_lib.com/track/like-humans").unwrap();
     }
 }

@@ -4,7 +4,7 @@ import sys
 
 RELEVANT_FILES: list[str] = ["album.rs", "artist.rs", "search.rs"]
 BLACKLISTED_CLASSES: list[str] = ["ImageId"]
-STUB_FILE_NAME: str = "python_bindings/bandcamp/__init__.pyi"
+STUB_FILE_NAME: str = "python_bindings/bandcamp_lib/__init__.pyi"
 
 TYPE_REPLACEMENTS: dict[str, str] = {
     "Option<": "Optional[",
