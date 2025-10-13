@@ -14,20 +14,20 @@ fn map_error<T>(result: Result<T, core_lib::Error>) -> PyResult<T> {
 /// A Python module implemented in Rust.
 #[pymodule]
 mod bandcamp {
-    use pyo3::IntoPyObjectExt;
     use pyo3::prelude::*;
+    use pyo3::IntoPyObjectExt;
 
+    use super::map_error;
     #[pymodule_export]
     use super::BandcampError;
+    use ::bandcamp as core_lib;
     #[pymodule_export]
     use ::bandcamp::{
         Album, AlbumBand, AlbumTag, AlbumTagGeoname, AlbumTrack, AlbumType, Artist,
         ArtistDiscographyEntry, ArtistDiscographyEntryType, ArtistSite, BandcampUrl, ImageId,
-        LabelArtist, PurchaseOptions, SearchResultItem, SearchResultItemAlbum,
-        SearchResultItemArtist, SearchResultItemFan, SearchResultItemTrack,
+        LabelArtist, PurchaseOptions, SearchResultItemAlbum, SearchResultItemArtist,
+        SearchResultItemFan, SearchResultItemTrack,
     };
-    use super::map_error;
-    use ::bandcamp as core_lib;
 
     #[pyfunction]
     fn fetch_artist(artist_id: u64) -> PyResult<Artist> {
@@ -65,10 +65,10 @@ mod bandcamp {
         let mut mapped_results = Vec::new();
         for item in results {
             mapped_results.push(match item {
-                SearchResultItem::Artist(artist) => {artist.into_py_any(py)}
-                SearchResultItem::Album(album) => {album.into_py_any(py)}
-                SearchResultItem::Track(track) => {track.into_py_any(py)}
-                SearchResultItem::Fan(fan) => {fan.into_py_any(py)}
+                core_lib::SearchResultItem::Artist(artist) => artist.into_py_any(py),
+                core_lib::SearchResultItem::Album(album) => album.into_py_any(py),
+                core_lib::SearchResultItem::Track(track) => track.into_py_any(py),
+                core_lib::SearchResultItem::Fan(fan) => fan.into_py_any(py),
             }?)
         }
         Ok(mapped_results)

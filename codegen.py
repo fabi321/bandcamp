@@ -1,7 +1,8 @@
 # Generate python stubs
 from typing import Optional
+import sys
 
-RELEVANT_DIRS: list[str] = ["album", "artist", "search"]
+RELEVANT_FILES: list[str] = ["album.rs", "artist.rs", "search.rs"]
 BLACKLISTED_CLASSES: list[str] = ["ImageId"]
 STUB_FILE_NAME: str = "python_bindings/bandcamp/__init__.pyi"
 
@@ -20,47 +21,51 @@ TYPE_REPLACEMENTS: dict[str, str] = {
 
 
 class Field:
-    def __init__(self):
-        self.name: str = ""
-        self.type: str = ""
-        self.description: Optional[str] = None
+    def __init__(self, name: str, type: str, description: Optional[str] = None):
+        self.name: str = name
+        self.type: str = type
+        self.description: Optional[str] = description
 
 
 class Class:
-    def __init__(self, name: str, fields: list[Field]):
+    def __init__(self, name: str, fields: list[Field], description: Optional[str] = None):
         self.name: str = name
         self.fields: list[Field] = fields
+        self.description: Optional[str] = description
 
 
 def get_class_fields(lines: list[str]) -> list[Field]:
-    current_field = Field()
     result: list[Field] = []
+    current_comments: str = ""
     for line in lines:
         line = line.strip()
         if line.startswith("///"):
-            comment: str = line.removeprefix("///").strip()
-            if current_field.description is None:
-                current_field.description = comment
-            else:
-                current_field.description += "\n" + comment
+            current_comments += "\n" + line.removeprefix("///").strip()
         elif line.startswith("#") or line.startswith("//"):
             pass
         else:
             name, type_ = line.split(":", 1)
-            current_field.name = name.removeprefix("pub").strip()
-            current_field.type = type_.removesuffix(",").strip()
-            result.append(current_field)
-            current_field = Field()
+            result.append(Field(
+                name.removeprefix("pub").strip(),
+                type_.removesuffix(",").strip(),
+                current_comments[1:] or None,
+            ))
+            current_comments = ""
     return result
 
 def get_classes(file: str) -> list[Class]:
     result: list[Class] = []
     current_class: Optional[Class] = None
     current_lines: list[str] = []
+    current_comments: str = ""
     for line in file.splitlines():
         if "pub struct" in line:
             name = line.split("struct", 1)[-1].removesuffix("{").strip()
-            current_class = Class(name, [])
+            current_class = Class(name, [], current_comments[1:] or None)
+        elif line.startswith("///"):
+            current_comments += "\n" + line.removeprefix("///").strip()
+        elif "{" in line:
+            current_comments = ""
         elif line.startswith("}") and current_class is not None:
             current_class.fields = get_class_fields(current_lines)
             result.append(current_class)
@@ -77,27 +82,52 @@ def rust_type_to_python(type_name: str) -> str:
     return type_name
 
 
+def rust_doc_to_python(doc: str, indent: int = 2) -> str:
+    indentation: str = " " * indent * 4
+    if '\n' in doc:
+        lines = '\n'.join(f"{indentation}{line}" for line in doc.split('\n'))
+        return f'{indentation}"""\n{lines}\n{indentation}"""\n\n'
+    return f'{indentation}"""{doc}"""\n\n'
+
+
 def main():
     with open(STUB_FILE_NAME) as f:
         old_content: str = f.read()
-    stub_file = open(STUB_FILE_NAME, "w")
+    new_file = ""
     for line in old_content.splitlines(keepends=True):
-        stub_file.write(line)
+        new_file += line
         if line.startswith("# DO NOT EDIT"):
             break
-    for dir in RELEVANT_DIRS:
-        with open(f"src/{dir}/mod.rs") as f:
+    for file in RELEVANT_FILES:
+        with open(f"src/{file}") as f:
             lines = f.read()
         classes = get_classes(lines)
         for class_ in classes:
             if class_.name in BLACKLISTED_CLASSES:
                 continue
-            stub_file.write(f"class {class_.name}:\n")
+            new_file += f"class {class_.name}:\n"
+            if class_.description:
+                new_file += rust_doc_to_python(class_.description, indent=1)
             for field in class_.fields:
-                stub_file.write(f"    @property\n")
+                new_file += f"    @property\n"
                 py_type = rust_type_to_python(field.type)
-                stub_file.write(f"    def {field.name}(self) -> {py_type}: ...\n")
-            stub_file.write("\n")
+                new_file += f"    def {field.name}(self) -> {py_type}:"
+                if field.description:
+                    new_file += '\n'
+                    new_file += rust_doc_to_python(field.description)
+                else:
+                    new_file += " ...\n"
+            if not new_file.endswith("\n\n"):
+                new_file += "\n"
+    if new_file.endswith("\n\n"):
+        new_file = new_file[:-1]
+    if new_file != old_content:
+        if '-c' in sys.argv or '--check' in sys.argv:
+            print(f"File {STUB_FILE_NAME} is outdated, please run codegen.py")
+            exit(1)
+        else:
+            with open(STUB_FILE_NAME, "w") as f:
+                f.write(new_file)
 
 
 if __name__ == "__main__":

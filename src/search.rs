@@ -36,7 +36,11 @@ pub struct SearchResultItemArtist {
     #[serde(default)]
     pub location: Option<String>,
     pub is_label: bool,
-    #[serde(default, rename = "tag_names", deserialize_with = "crate::util::null_as_default")]
+    #[serde(
+        default,
+        rename = "tag_names",
+        deserialize_with = "crate::util::null_as_default"
+    )]
     pub tags: Vec<String>,
     #[serde(rename = "genre_name")]
     pub genre: Option<String>,

@@ -32,10 +32,16 @@ def track_from_url(url: str) -> Album: ...
 
 # DO NOT EDIT BELOW THIS LINE! ----------------
 class Album:
+    """Single track or album"""
+
     @property
-    def id(self) -> int: ...
+    def id(self) -> int:
+        """Track or album id"""
+
     @property
-    def item_type(self) -> AlbumType: ...
+    def item_type(self) -> AlbumType:
+        """Type of item"""
+
     @property
     def title(self) -> str: ...
     @property
@@ -43,19 +49,31 @@ class Album:
     @property
     def image_id(self) -> ImageId: ...
     @property
-    def band(self) -> AlbumBand: ...
+    def band(self) -> AlbumBand:
+        """Band this belongs to"""
+
     @property
-    def album_id(self) -> Optional[int]: ...
+    def album_id(self) -> Optional[int]:
+        """For a track belonging to an album"""
+
     @property
-    def album_title(self) -> Optional[str]: ...
+    def album_title(self) -> Optional[str]:
+        """For a track belonging to an album"""
+
     @property
-    def about(self) -> Optional[str]: ...
+    def about(self) -> Optional[str]:
+        """About text for an album or track, explaining it a bit"""
+
     @property
-    def credits(self) -> Optional[str]: ...
+    def credits(self) -> Optional[str]:
+        """Credits for the album or track"""
+
     @property
     def tracks(self) -> list[AlbumTrack]: ...
     @property
-    def featured_track(self) -> Optional[int]: ...
+    def featured_track(self) -> Optional[int]:
+        """The track id of the featured track, if any"""
+
     @property
     def release_date(self) -> datetime: ...
     @property
@@ -75,7 +93,11 @@ class Album:
     @property
     def merch_sold_out(self) -> Optional[bool]: ...
     @property
-    def streaming_limit(self) -> Optional[int]: ...
+    def streaming_limit(self) -> Optional[int]:
+        """
+        How often a user can stream a track before being prompted to buy it,
+        see https://get.bandcamp.help/hc/en-us/articles/23020694060183-What-are-streaming-limits-on-Bandcamp
+        """
 
 class AlbumBand:
     @property
@@ -119,7 +141,9 @@ class AlbumTrack:
     @property
     def track_number(self) -> int: ...
     @property
-    def duration(self) -> Optional[float]: ...
+    def duration(self) -> Optional[float]:
+        """Duration is undefined for unstreamable tracks or unreleased tracks"""
+
     @property
     def streaming_url(self) -> dict[str, str]: ...
     @property
@@ -157,7 +181,11 @@ class PurchaseOptions:
     @property
     def has_digital_download(self) -> bool: ...
     @property
-    def require_email(self) -> bool: ...
+    def require_email(self) -> bool:
+        """
+        Require an email address for a free download, see
+        https://get.bandcamp.help/hc/en-us/articles/23020667057943-How-do-I-collect-emails
+        """
 
 class Artist:
     @property
@@ -177,7 +205,8 @@ class Artist:
     @property
     def discography(self) -> list[ArtistDiscographyEntry]: ...
     @property
-    def artists(self) -> list[LabelArtist]: ...
+    def artists(self) -> list[LabelArtist]:
+        """artists are only present for labels"""
 
 class ArtistSite:
     @property
@@ -191,9 +220,13 @@ class ArtistDiscographyEntry:
     @property
     def item_type(self) -> ArtistDiscographyEntryType: ...
     @property
-    def artist_name(self) -> Optional[str]: ...
+    def artist_name(self) -> Optional[str]:
+        """Artist name of this specific release"""
+
     @property
-    def band_id(self) -> int: ...
+    def band_id(self) -> int:
+        """Name of the band this is released under"""
+
     @property
     def band_name(self) -> str: ...
     @property
@@ -206,6 +239,8 @@ class ArtistDiscographyEntry:
     def release_date(self) -> datetime: ...
 
 class LabelArtist:
+    """Artist entry for a label"""
+
     @property
     def id(self) -> int: ...
     @property
@@ -286,4 +321,3 @@ class SearchResultItemFan:
     def genre_name(self) -> str: ...
     @property
     def url(self) -> str: ...
-

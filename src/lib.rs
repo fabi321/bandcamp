@@ -7,70 +7,94 @@ mod error;
 mod search;
 mod util;
 
-use lazy_static::lazy_static;
-use snafu::OptionExt;
+use crate::error::InvalidUrlSnafu;
 pub use album::{
-    Album, AlbumBand, AlbumTag, AlbumTagGeoname, AlbumTrack, AlbumType, PurchaseOptions, fetch_album, fetch_track,
+    Album, AlbumBand, AlbumTag, AlbumTagGeoname, AlbumTrack, AlbumType, PurchaseOptions,
+    fetch_album, fetch_track,
 };
 pub use artist::{
     Artist, ArtistDiscographyEntry, ArtistDiscographyEntryType, ArtistSite, LabelArtist,
     fetch_artist,
 };
 pub use error::Error;
+use lazy_static::lazy_static;
 pub use search::{
     BandcampUrl, ImageId, SearchResultItem, SearchResultItemAlbum, SearchResultItemArtist,
     SearchResultItemFan, SearchResultItemTrack, search,
 };
-use crate::error::InvalidUrlSnafu;
+use snafu::OptionExt;
 
 lazy_static! {
-    static ref ARTIST_URL: Regex = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
-    static ref ALBUM_URL: Regex = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)").expect("invalid regex");
-    static ref TRACK_URL: Regex = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)").expect("invalid regex");
+    static ref ARTIST_URL: Regex =
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
+    static ref ALBUM_URL: Regex =
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)")
+            .expect("invalid regex");
+    static ref TRACK_URL: Regex =
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)")
+            .expect("invalid regex");
 }
 
 pub fn artist_from_url(url: &str) -> Result<Artist, Error> {
-    let caputres = ARTIST_URL.captures(url).with_context(|| InvalidUrlSnafu { url: url.to_string() })?;
+    let caputres = ARTIST_URL.captures(url).with_context(|| InvalidUrlSnafu {
+        url: url.to_string(),
+    })?;
     let search_result = search(&caputres[1])?;
     let needle = format!("https://{}.bandcamp.com", &caputres[1]);
     for result in search_result {
         if let SearchResultItem::Artist(artist) = result {
             if artist.url.starts_with(&needle) {
-                return fetch_artist(artist.artist_id)
+                return fetch_artist(artist.artist_id);
             }
         }
     }
-    Err(Error::NotFoundError { url: url.to_string() })
+    Err(Error::NotFoundError {
+        url: url.to_string(),
+    })
 }
 
 pub fn album_from_url(url: &str) -> Result<Album, Error> {
-    let captures = ALBUM_URL.captures(url).with_context(|| InvalidUrlSnafu { url: url.to_string() })?;
+    let captures = ALBUM_URL.captures(url).with_context(|| InvalidUrlSnafu {
+        url: url.to_string(),
+    })?;
     let query = format!("{} {}", &captures[1], &captures[2]);
     let search_result = search(&query)?;
-    let needle = format!("https://{}.bandcamp.com/album/{}", &captures[1], &captures[2]);
+    let needle = format!(
+        "https://{}.bandcamp.com/album/{}",
+        &captures[1], &captures[2]
+    );
     for result in search_result {
         if let SearchResultItem::Album(album) = result {
             if album.url.item_url.starts_with(&needle) {
-                return fetch_album(album.band_id, album.album_id)
+                return fetch_album(album.band_id, album.album_id);
             }
         }
     }
-    Err(Error::NotFoundError { url: url.to_string() })
+    Err(Error::NotFoundError {
+        url: url.to_string(),
+    })
 }
 
 pub fn track_from_url(url: &str) -> Result<Album, Error> {
-    let captures = TRACK_URL.captures(url).with_context(|| InvalidUrlSnafu { url: url.to_string() })?;
+    let captures = TRACK_URL.captures(url).with_context(|| InvalidUrlSnafu {
+        url: url.to_string(),
+    })?;
     let query = format!("{} {}", &captures[1], &captures[2]);
     let search_result = search(&query)?;
-    let needle = format!("https://{}.bandcamp.com/track/{}", &captures[1], &captures[2]);
+    let needle = format!(
+        "https://{}.bandcamp.com/track/{}",
+        &captures[1], &captures[2]
+    );
     for result in search_result {
         if let SearchResultItem::Track(track) = result {
             if track.url.item_url.starts_with(&needle) {
-                return fetch_track(track.band_id, track.track_id)
+                return fetch_track(track.band_id, track.track_id);
             }
         }
     }
-    Err(Error::NotFoundError { url: url.to_string() })
+    Err(Error::NotFoundError {
+        url: url.to_string(),
+    })
 }
 
 #[cfg(test)]
