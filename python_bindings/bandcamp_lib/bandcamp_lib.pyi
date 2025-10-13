@@ -139,7 +139,9 @@ class AlbumTrack:
     @property
     def title(self) -> str: ...
     @property
-    def track_number(self) -> int: ...
+    def track_number(self) -> Optional[int]:
+        """Track number (one indexed), is None for tracks"""
+
     @property
     def duration(self) -> Optional[float]:
         """Duration is undefined for unstreamable tracks or unreleased tracks"""
