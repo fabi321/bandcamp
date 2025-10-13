@@ -41,9 +41,7 @@ def get_class_fields(lines: list[str]) -> list[Field]:
         line = line.strip()
         if line.startswith("///"):
             current_comments += "\n" + line.removeprefix("///").strip()
-        elif line.startswith("#") or line.startswith("//"):
-            pass
-        else:
+        elif line.startswith("pub"):
             name, type_ = line.split(":", 1)
             result.append(Field(
                 name.removeprefix("pub").strip(),
