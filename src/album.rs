@@ -1,6 +1,5 @@
 use crate::error::{Error, SerdeSnafu};
-use crate::search::ImageId;
-use crate::util::get_url;
+use crate::util::{AlbumImage, Image, get_url};
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use snafu::ResultExt;
@@ -21,7 +20,7 @@ pub struct Album {
     #[serde(rename = "bandcamp_url")]
     pub url: String,
     #[serde(flatten)]
-    pub image_id: ImageId,
+    pub image: AlbumImage,
     /// Band this belongs to
     pub band: AlbumBand,
     /// For a track belonging to an album
@@ -67,7 +66,7 @@ pub struct AlbumBand {
     pub id: u64,
     pub name: String,
     #[serde(flatten)]
-    pub image_id: ImageId,
+    pub image: Image,
     pub bio: Option<String>,
     pub location: Option<String>,
 }
@@ -117,7 +116,7 @@ pub struct AlbumTrack {
     pub is_streamable: bool,
     pub has_lyrics: bool,
     #[serde(flatten)]
-    pub image_id: ImageId,
+    pub image: AlbumImage,
     #[serde(flatten)]
     pub purchase_options: PurchaseOptions,
 }

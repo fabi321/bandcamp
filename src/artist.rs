@@ -1,6 +1,5 @@
 use crate::error::*;
-use crate::search::ImageId;
-use crate::util::get_url;
+use crate::util::{AlbumImage, Image, get_url};
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use snafu::ResultExt;
@@ -12,8 +11,8 @@ const ARTISTS_URL: &'static str = "https://bandcamp.com/api/mobile/25/band_detai
 pub struct Artist {
     pub id: u64,
     pub name: String,
-    #[serde(rename = "bio_image_id")]
-    pub image_id: Option<u64>,
+    #[serde(flatten)]
+    pub image: Image,
     pub bio: Option<String>,
     #[serde(rename = "bandcamp_url")]
     pub url: String,
@@ -46,7 +45,7 @@ pub struct ArtistDiscographyEntry {
     pub band_name: String,
     pub title: String,
     #[serde(flatten)]
-    pub image: ImageId,
+    pub image: AlbumImage,
     pub is_purchasable: bool,
     #[serde(with = "crate::date_serializer")]
     pub release_date: DateTime<Utc>,
@@ -67,7 +66,7 @@ pub struct LabelArtist {
     pub id: u64,
     pub name: String,
     #[serde(flatten)]
-    pub image_id: ImageId,
+    pub image: Image,
     pub location: Option<String>,
 }
 

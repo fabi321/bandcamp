@@ -19,15 +19,21 @@ pub use artist::{
 pub use error::Error;
 use lazy_static::lazy_static;
 pub use search::{
-    BandcampUrl, ImageId, SearchResultItem, SearchResultItemAlbum, SearchResultItemArtist,
+    BandcampUrl, SearchResultItem, SearchResultItemAlbum, SearchResultItemArtist,
     SearchResultItemFan, SearchResultItemTrack, search,
 };
 use snafu::OptionExt;
+pub use util::{AlbumImage, Image};
 
 lazy_static! {
-    static ref ARTIST_URL: Regex =Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
-    static ref ALBUM_URL: Regex = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)").expect("invalid regex");
-    static ref TRACK_URL: Regex =Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)").expect("invalid regex");
+    static ref ARTIST_URL: Regex =
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
+    static ref ALBUM_URL: Regex =
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)")
+            .expect("invalid regex");
+    static ref TRACK_URL: Regex =
+        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)")
+            .expect("invalid regex");
 }
 
 pub fn artist_from_url(url: &str) -> Result<Artist, Error> {

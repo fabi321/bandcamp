@@ -13,16 +13,16 @@ fn map_error<T>(result: Result<T, bandcamp::Error>) -> PyResult<T> {
 /// A Python module implemented in Rust.
 #[pymodule]
 mod bandcamp_lib {
-    use pyo3::prelude::*;
     use pyo3::IntoPyObjectExt;
+    use pyo3::prelude::*;
 
-    use super::map_error;
     #[pymodule_export]
     use super::BandcampError;
+    use super::map_error;
     #[pymodule_export]
     use bandcamp::{
-        Album, AlbumBand, AlbumTag, AlbumTagGeoname, AlbumTrack, AlbumType, Artist,
-        ArtistDiscographyEntry, ArtistDiscographyEntryType, ArtistSite, BandcampUrl, ImageId,
+        Album, AlbumBand, AlbumImage, AlbumTag, AlbumTagGeoname, AlbumTrack, AlbumType, Artist,
+        ArtistDiscographyEntry, ArtistDiscographyEntryType, ArtistSite, BandcampUrl, Image,
         LabelArtist, PurchaseOptions, SearchResultItemAlbum, SearchResultItemArtist,
         SearchResultItemFan, SearchResultItemTrack,
     };

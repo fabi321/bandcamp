@@ -1,5 +1,5 @@
 use crate::error::{Error, SerdeSnafu};
-use crate::util::get_url;
+use crate::util::{AlbumImage, Image, get_url};
 use serde::{Deserialize, Deserializer};
 use snafu::ResultExt;
 use url::form_urlencoded::byte_serialize;
@@ -30,7 +30,7 @@ pub struct SearchResultItemArtist {
     #[serde(rename = "id")]
     pub artist_id: u64,
     #[serde(flatten)]
-    pub image: ImageId,
+    pub image: Image,
     pub name: String,
     #[serde(default)]
     pub location: Option<String>,
@@ -78,7 +78,7 @@ pub struct SearchResultItemAlbum {
     #[serde(rename = "id")]
     pub album_id: u64,
     #[serde(flatten)]
-    pub image: ImageId,
+    pub image: AlbumImage,
     pub name: String,
     pub band_id: u64,
     pub band_name: String,
@@ -92,7 +92,7 @@ pub struct SearchResultItemTrack {
     #[serde(rename = "id")]
     pub track_id: u64,
     #[serde(flatten)]
-    pub image: ImageId,
+    pub image: AlbumImage,
     pub name: String,
     pub band_id: u64,
     pub band_name: String,
@@ -108,35 +108,12 @@ pub struct SearchResultItemFan {
     #[serde(rename = "id")]
     pub fan_id: u64,
     #[serde(flatten)]
-    pub image: ImageId,
+    pub image: Image,
     pub name: String,
     pub username: String,
     pub collection_size: u64,
     pub genre_name: String,
     pub url: String,
-}
-
-#[derive(Debug, Eq, PartialEq, Deserialize, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-pub struct ImageId {
-    #[serde(default)]
-    image_id: Option<u64>,
-    #[serde(default)]
-    img_id: Option<u64>,
-    #[serde(default)]
-    art_id: Option<u64>,
-}
-
-#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
-impl ImageId {
-    pub fn get_image_id(&self) -> Option<u64> {
-        self.image_id.or(self.img_id.or(self.art_id))
-    }
-
-    pub fn get_url(&self) -> Option<String> {
-        self.get_image_id()
-            .map(|id| format!("https://f4.bcbits.com/img/{:010}_0.jpg", id))
-    }
 }
 
 pub fn search(query: &str) -> Result<Vec<SearchResultItem>, Error> {
