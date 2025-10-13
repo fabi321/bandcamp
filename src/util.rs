@@ -8,6 +8,7 @@ fn inner_get(url: &str) -> Result<(Vec<u8>, Option<String>), curl::Error> {
     let mut easy = Easy::new();
     easy.url(url)?;
     easy.follow_location(true)?;
+    easy.fail_on_error(true)?;
 
     {
         let mut transfer = easy.transfer();
