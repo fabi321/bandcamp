@@ -23,8 +23,8 @@ mod bandcamp_lib {
     use bandcamp::{
         Album, AlbumBand, AlbumImage, AlbumTag, AlbumTagGeoname, AlbumTrack, AlbumType, Artist,
         ArtistDiscographyEntry, ArtistDiscographyEntryType, ArtistSite, BandcampUrl, Image,
-        LabelArtist, PurchaseOptions, SearchResultItemAlbum, SearchResultItemArtist,
-        SearchResultItemFan, SearchResultItemTrack,
+        ImageResolution, LabelArtist, PurchaseOptions, SearchResultItemAlbum,
+        SearchResultItemArtist, SearchResultItemFan, SearchResultItemTrack,
     };
 
     #[pyfunction]

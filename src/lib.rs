@@ -23,7 +23,7 @@ pub use search::{
     SearchResultItemFan, SearchResultItemTrack, search,
 };
 use snafu::OptionExt;
-pub use util::{AlbumImage, Image};
+pub use util::{AlbumImage, Image, ImageResolution};
 
 lazy_static! {
     static ref ARTIST_URL: Regex =
