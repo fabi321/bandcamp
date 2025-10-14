@@ -28,47 +28,63 @@ mod bandcamp_lib {
     };
 
     #[pyfunction]
-    fn fetch_artist(artist_id: u64) -> PyResult<Artist> {
-        map_error(bandcamp::fetch_artist(artist_id))
+    fn fetch_artist(artist_id: u64, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            map_error(bandcamp::fetch_artist(artist_id).await)
+        })
     }
 
     #[pyfunction]
-    fn fetch_album(artist_id: u64, album_id: u64) -> PyResult<Album> {
-        map_error(bandcamp::fetch_album(artist_id, album_id))
+    fn fetch_album(artist_id: u64, album_id: u64, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            map_error(bandcamp::fetch_album(artist_id, album_id).await)
+        })
     }
 
     #[pyfunction]
-    fn fetch_track(artist_id: u64, track_id: u64) -> PyResult<Album> {
-        map_error(bandcamp::fetch_track(artist_id, track_id))
+    fn fetch_track(artist_id: u64, track_id: u64, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            map_error(bandcamp::fetch_track(artist_id, track_id).await)
+        })
     }
 
     #[pyfunction]
-    fn album_from_url(url: String) -> PyResult<Album> {
-        map_error(bandcamp::album_from_url(&url))
+    fn album_from_url(url: String, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            map_error(bandcamp::album_from_url(&url).await)
+        })
     }
 
     #[pyfunction]
-    fn artist_from_url(url: String) -> PyResult<Artist> {
-        map_error(bandcamp::artist_from_url(&url))
+    fn artist_from_url(url: String, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            map_error(bandcamp::artist_from_url(&url).await)
+        })
     }
 
     #[pyfunction]
-    fn track_from_url(url: String) -> PyResult<Album> {
-        map_error(bandcamp::track_from_url(&url))
+    fn track_from_url(url: String, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            map_error(bandcamp::track_from_url(&url).await)
+        })
     }
 
     #[pyfunction]
-    fn search(query: String, py: Python<'_>) -> PyResult<Vec<Py<PyAny>>> {
-        let results = map_error(bandcamp::search(&query))?;
-        let mut mapped_results = Vec::new();
-        for item in results {
-            mapped_results.push(match item {
-                bandcamp::SearchResultItem::Artist(artist) => artist.into_py_any(py),
-                bandcamp::SearchResultItem::Album(album) => album.into_py_any(py),
-                bandcamp::SearchResultItem::Track(track) => track.into_py_any(py),
-                bandcamp::SearchResultItem::Fan(fan) => fan.into_py_any(py),
-            }?)
-        }
-        Ok(mapped_results)
+    fn search(query: String, py: Python) -> PyResult<Bound<PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py(py, async move {
+            let results = map_error(bandcamp::search(&query).await)?;
+            Python::attach(|py| {
+                let mut mapped_results = Vec::new();
+                for item in results {
+                    mapped_results.push(match item {
+                        bandcamp::SearchResultItem::Artist(artist) => artist.into_py_any(py),
+                        bandcamp::SearchResultItem::Album(album) => album.into_py_any(py),
+                        bandcamp::SearchResultItem::Track(track) => track.into_py_any(py),
+                        bandcamp::SearchResultItem::Fan(fan) => fan.into_py_any(py),
+                    }?)
+                }
+                Ok(mapped_results)
+            })
+        })
     }
 }

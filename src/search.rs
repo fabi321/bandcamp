@@ -116,12 +116,13 @@ pub struct SearchResultItemFan {
     pub url: String,
 }
 
-pub fn search(query: &str) -> Result<Vec<SearchResultItem>, Error> {
+pub async fn search(query: &str) -> Result<Vec<SearchResultItem>, Error> {
     let escaped_query: String = byte_serialize(query.as_bytes()).collect();
     let (result, _) = get_url(format!(
         "{}?q={}&param_with_locations=true",
         SEARCH_ENDPOINT, escaped_query
-    ))?;
+    ))
+    .await?;
     let result: SearchResult = serde_json::from_str(&result).context(SerdeSnafu)?;
     Ok(result.results)
 }
@@ -130,13 +131,13 @@ pub fn search(query: &str) -> Result<Vec<SearchResultItem>, Error> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_works() {
-        search("Meschera").unwrap();
+    #[tokio::test]
+    async fn test_works() {
+        search("Meschera").await.unwrap();
     }
 
-    #[test]
-    fn test_foo() {
-        search("foo").unwrap();
+    #[tokio::test]
+    async fn test_foo() {
+        search("foo").await.unwrap();
     }
 }

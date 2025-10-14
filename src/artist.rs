@@ -70,9 +70,9 @@ pub struct LabelArtist {
     pub location: Option<String>,
 }
 
-pub fn fetch_artist(artist_id: u64) -> Result<Artist, Error> {
+pub async fn fetch_artist(artist_id: u64) -> Result<Artist, Error> {
     let url = format!("{}?band_id={}", ARTISTS_URL, artist_id);
-    let (content, _) = get_url(url)?;
+    let (content, _) = get_url(url).await?;
     serde_json::from_str(&content).context(SerdeSnafu)
 }
 
@@ -80,25 +80,25 @@ pub fn fetch_artist(artist_id: u64) -> Result<Artist, Error> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_grai() {
-        fetch_artist(3250782803).unwrap();
+    #[tokio::test]
+    async fn test_grai() {
+        fetch_artist(3250782803).await.unwrap();
     }
 
-    #[test]
-    fn test_meschera() {
-        fetch_artist(3752216131).unwrap();
+    #[tokio::test]
+    async fn test_meschera() {
+        fetch_artist(3752216131).await.unwrap();
     }
 
-    #[test]
-    fn test_bergfried() {
-        let result = fetch_artist(3899303380).unwrap();
+    #[tokio::test]
+    async fn test_bergfried() {
+        let result = fetch_artist(3899303380).await.unwrap();
         assert!(result.location.is_none());
     }
 
-    #[test]
-    fn test_napalm_records() {
-        let result = fetch_artist(4115243786).unwrap();
+    #[tokio::test]
+    async fn test_napalm_records() {
+        let result = fetch_artist(4115243786).await.unwrap();
         assert_eq!(result.name, "Napalm Records".to_string());
         assert!(!result.artists.is_empty());
     }

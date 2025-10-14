@@ -135,22 +135,22 @@ pub struct PurchaseOptions {
 }
 
 /// Fetch album
-pub fn fetch_album(band_id: u64, album_id: u64) -> Result<Album, Error> {
+pub async fn fetch_album(band_id: u64, album_id: u64) -> Result<Album, Error> {
     let url = format!(
         "{}?band_id={band_id}&tralbum_id={album_id}&tralbum_type=a",
         ALBUMS_URL
     );
-    let (content, _) = get_url(url)?;
+    let (content, _) = get_url(url).await?;
     serde_json::from_str(&content).context(SerdeSnafu)
 }
 
 /// Fetch track
-pub fn fetch_track(band_id: u64, album_id: u64) -> Result<Album, Error> {
+pub async fn fetch_track(band_id: u64, album_id: u64) -> Result<Album, Error> {
     let url = format!(
         "{}?band_id={band_id}&tralbum_id={album_id}&tralbum_type=t",
         ALBUMS_URL
     );
-    let (content, _) = get_url(url)?;
+    let (content, _) = get_url(url).await?;
     serde_json::from_str(&content).context(SerdeSnafu)
 }
 
@@ -158,26 +158,26 @@ pub fn fetch_track(band_id: u64, album_id: u64) -> Result<Album, Error> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_meschera() {
-        let result = fetch_album(3752216131, 83593492).unwrap();
+    #[tokio::test]
+    async fn test_meschera() {
+        let result = fetch_album(3752216131, 83593492).await.unwrap();
         assert_eq!(result.title, "Legends of the Ancients".to_string());
     }
 
-    #[test]
-    fn test_track() {
-        let result = fetch_track(3752216131, 3279776665).unwrap();
+    #[tokio::test]
+    async fn test_track() {
+        let result = fetch_track(3752216131, 3279776665).await.unwrap();
         assert_eq!(result.title, "Children of the Ancient Forests".to_string());
     }
 
-    #[test]
-    fn test_zaklyatie() {
-        let result = fetch_track(3752216131, 2452065074).unwrap();
+    #[tokio::test]
+    async fn test_zaklyatie() {
+        let result = fetch_track(3752216131, 2452065074).await.unwrap();
         assert_eq!(result.title, "Zaklyatie".to_string());
     }
 
-    #[test]
-    fn test_geo_location() {
-        fetch_track(989192576, 1585846251).unwrap();
+    #[tokio::test]
+    async fn test_geo_location() {
+        fetch_track(989192576, 1585846251).await.unwrap();
     }
 }
