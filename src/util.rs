@@ -1,18 +1,14 @@
 use crate::error::{Error, RequestSnafu};
-use lazy_static::lazy_static;
 use reqwest::{Client, header};
 use serde::{Deserialize, Deserializer};
 use snafu::ResultExt;
 
-lazy_static! {
-    static ref CLIENT: Client = Client::builder()
+async fn inner_get(url: &str) -> Result<(String, Option<String>), reqwest::Error> {
+    let client = Client::builder()
         .use_rustls_tls()
         .build()
         .expect("Unable to build client");
-}
-
-async fn inner_get(url: &str) -> Result<(String, Option<String>), reqwest::Error> {
-    let response = CLIENT
+    let response = client
         .get(url)
         .header(header::USER_AGENT, "curl/8.5.0")
         .header(header::ACCEPT, "*/*")
@@ -174,12 +170,16 @@ mod tests {
             bio_image_id: None,
             art_id: None,
         };
+        let client = Client::builder()
+            .use_rustls_tls()
+            .build()
+            .expect("Unable to build client");
 
         for format in ImageResolution::iter() {
             println!("Testing {:?}", format);
 
             let url = image.get_with_resolution(format).unwrap();
-            let request = CLIENT
+            let request = client
                 .get(&url)
                 .header(header::USER_AGENT, "curl/8.5.0")
                 .header(header::ACCEPT, "*/*")
