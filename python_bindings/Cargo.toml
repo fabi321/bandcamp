@@ -9,5 +9,6 @@ name = "bandcamp_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.26.0"
+pyo3 = { version = "0.26.0", features = ["extension-module"]}
+pyo3-async-runtimes = { version = "0.26", features = ["tokio-runtime"] }
 bandcamp = { version = "0.2.0", path = "..", features = ["pyo3"] }

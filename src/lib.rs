@@ -36,16 +36,16 @@ lazy_static! {
             .expect("invalid regex");
 }
 
-pub fn artist_from_url(url: &str) -> Result<Artist, Error> {
+pub async fn artist_from_url(url: &str) -> Result<Artist, Error> {
     let caputres = ARTIST_URL.captures(url).with_context(|| InvalidUrlSnafu {
         url: url.to_string(),
     })?;
-    let search_result = search(&caputres[1])?;
+    let search_result = search(&caputres[1]).await?;
     let needle = format!("https://{}.bandcamp.com", &caputres[1]);
     for result in search_result {
         if let SearchResultItem::Artist(artist) = result {
             if artist.url.starts_with(&needle) {
-                return fetch_artist(artist.artist_id);
+                return fetch_artist(artist.artist_id).await;
             }
         }
     }
@@ -54,12 +54,12 @@ pub fn artist_from_url(url: &str) -> Result<Artist, Error> {
     })
 }
 
-pub fn album_from_url(url: &str) -> Result<Album, Error> {
+pub async fn album_from_url(url: &str) -> Result<Album, Error> {
     let captures = ALBUM_URL.captures(url).with_context(|| InvalidUrlSnafu {
         url: url.to_string(),
     })?;
     let query = format!("{} {}", &captures[1], &captures[2]);
-    let search_result = search(&query)?;
+    let search_result = search(&query).await?;
     let needle = format!(
         "https://{}.bandcamp.com/album/{}",
         &captures[1], &captures[2]
@@ -67,7 +67,7 @@ pub fn album_from_url(url: &str) -> Result<Album, Error> {
     for result in search_result {
         if let SearchResultItem::Album(album) = result {
             if album.url.item_url.starts_with(&needle) {
-                return fetch_album(album.band_id, album.album_id);
+                return fetch_album(album.band_id, album.album_id).await;
             }
         }
     }
@@ -76,12 +76,12 @@ pub fn album_from_url(url: &str) -> Result<Album, Error> {
     })
 }
 
-pub fn track_from_url(url: &str) -> Result<Album, Error> {
+pub async fn track_from_url(url: &str) -> Result<Album, Error> {
     let captures = TRACK_URL.captures(url).with_context(|| InvalidUrlSnafu {
         url: url.to_string(),
     })?;
     let query = format!("{} {}", &captures[1], &captures[2]);
-    let search_result = search(&query)?;
+    let search_result = search(&query).await?;
     let needle = format!(
         "https://{}.bandcamp.com/track/{}",
         &captures[1], &captures[2]
@@ -89,7 +89,7 @@ pub fn track_from_url(url: &str) -> Result<Album, Error> {
     for result in search_result {
         if let SearchResultItem::Track(track) = result {
             if track.url.item_url.starts_with(&needle) {
-                return fetch_track(track.band_id, track.track_id);
+                return fetch_track(track.band_id, track.track_id).await;
             }
         }
     }
@@ -102,18 +102,22 @@ pub fn track_from_url(url: &str) -> Result<Album, Error> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_get_artist_from_url() {
-        artist_from_url("myrkur.bandcamp.com").unwrap();
+    #[tokio::test]
+    async fn test_get_artist_from_url() {
+        artist_from_url("myrkur.bandcamp.com").await.unwrap();
     }
 
-    #[test]
-    fn test_get_album_from_url() {
-        album_from_url("myrkur.bandcamp.com/album/spine").unwrap();
+    #[tokio::test]
+    async fn test_get_album_from_url() {
+        album_from_url("myrkur.bandcamp.com/album/spine")
+            .await
+            .unwrap();
     }
 
-    #[test]
-    fn test_get_track_from_url() {
-        track_from_url("myrkur.bandcamp.com/track/like-humans").unwrap();
+    #[tokio::test]
+    async fn test_get_track_from_url() {
+        track_from_url("myrkur.bandcamp.com/track/like-humans")
+            .await
+            .unwrap();
     }
 }

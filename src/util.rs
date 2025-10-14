@@ -1,32 +1,26 @@
-use crate::error::{Error, RequestSnafu, ResponseDecodeSnafu};
-use curl::easy::Easy;
+use crate::error::{Error, RequestSnafu};
 use serde::{Deserialize, Deserializer};
 use snafu::ResultExt;
 
-fn inner_get(url: &str) -> Result<(Vec<u8>, Option<String>), curl::Error> {
-    let mut data = Vec::new();
-    let mut easy = Easy::new();
-    easy.url(url)?;
-    easy.follow_location(true)?;
-    easy.fail_on_error(true)?;
+async fn inner_get(url: &str) -> Result<(String, Option<String>), reqwest::Error> {
+    let client = reqwest::Client::builder().use_rustls_tls().build()?;
+    let response = client
+        .get(url)
+        .header("User-Agent", "curl/8.5.0")
+        .header("Accept", "*/*")
+        .send()
+        .await?;
 
-    {
-        let mut transfer = easy.transfer();
-        transfer.write_function(|new_data| {
-            data.extend_from_slice(new_data);
-            Ok(new_data.len())
-        })?;
-        transfer.perform()?;
-    }
-    let url = easy.effective_url()?.map(|s| s.to_string());
+    response.error_for_status_ref()?;
+    let data = response.text().await?;
 
-    Ok((data, url))
+    Ok((data, None))
 }
-pub(crate) fn get_url(url: String) -> Result<(String, Option<String>), Error> {
-    let (content, actual_url) =
-        inner_get(&url).with_context(|_| RequestSnafu { url: url.clone() })?;
-    let result = String::from_utf8(content).with_context(|_| ResponseDecodeSnafu { url })?;
-    Ok((result, actual_url))
+pub(crate) async fn get_url(url: String) -> Result<(String, Option<String>), Error> {
+    let (content, actual_url) = inner_get(&url)
+        .await
+        .with_context(|_| RequestSnafu { url: url.clone() })?;
+    Ok((content, actual_url))
 }
 
 pub(crate) fn null_as_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
