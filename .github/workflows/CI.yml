@@ -57,6 +57,7 @@ jobs:
                 apt update -y && apt install -y libssl-dev openssl pkg-config
             fi
             pkg-config --list-all
+            find / -name opensslv.h
           target: ${{ matrix.platform.target }}
           args: --manifest-path python_bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
