@@ -19,6 +19,9 @@ pyo3 = { version = "0.26", optional = true, features = ["serde", "chrono", "exte
 
 [dev-dependencies]
 tokio = { version = "1.48.0" , features = ["full"] }
+image = { version = "0.25", features = ["jpeg", "png"] }
+strum = "0.27"
+strum_macros = "0.27"
 
 [features]
 pyo3 = ["dep:pyo3"]

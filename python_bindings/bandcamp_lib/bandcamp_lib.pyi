@@ -6,10 +6,12 @@ from typing import Optional
 class Image:
     def get_image_id(self) -> Optional[int]: ...
     def get_url(self) -> Optional[str]: ...
+    def get_with_resolution(self, resolution: ImageResolution) -> Optional[str]: ...
 
 class AlbumImage:
     def get_image_id(self) -> Optional[int]: ...
     def get_url(self) -> Optional[str]: ...
+    def get_with_resolution(self, resolution: ImageResolution) -> Optional[str]: ...
 
 class AlbumType:
     Album: AlbumType
@@ -327,3 +329,60 @@ class SearchResultItemFan:
     def genre_name(self) -> str: ...
     @property
     def url(self) -> str: ...
+
+class ImageResolution:
+    Full = 0
+    Px25 = 22
+    Px50 = 42
+    Px60x45 = 140
+    Px40x80 = 161
+    Px90 = 101
+    Px60x100 = 160
+    Px100 = 3
+    Px100x75 = 29
+    Px120 = 21
+    Px124 = 8
+    Px135 = 15
+    Px138 = 12
+    Px140 = 50
+    Px144x108 = 38
+    Px150 = 7
+    Px168x126 = 37
+    Px172 = 11
+    Px180 = 206
+    Px200 = 44
+    Px210 = 9
+    Px210Gift = 165
+    """Image with "Gift" in the top right hand corner"""
+
+    Px240 = 205
+    Px270 = 70
+    Px280 = 201
+    Px300 = 4
+    Px350 = 2
+    Px350Grayscale = 300
+    """Grayscale 350x350px image"""
+
+    Px360 = 204
+    Px368 = 14
+    Px368x276 = 33
+    Px380 = 13
+    Px380x285 = 32
+    Px400x300 = 36
+    Px420 = 200
+    Px422 = 170
+    Px540 = 71
+    Px640x124 = 120
+    Px646 = 171
+    Px700 = 5
+    Px715x402 = 27
+    Px768x432 = 28
+    Px800x600 = 26
+    Px900x468 = 220
+    Px975x180PNG = 100
+    Px1024 = 20
+    Px1024PNG = 31
+    Px1200 = 10
+    Px1280x720 = 150
+    Px720x1280 = 151
+    Px3000PNG = 1

@@ -2,7 +2,7 @@
 from typing import Optional
 import sys
 
-RELEVANT_FILES: list[str] = ["album.rs", "artist.rs", "search.rs"]
+RELEVANT_FILES: list[str] = ["album.rs", "artist.rs", "search.rs", "util.rs"]
 BLACKLISTED_CLASSES: list[str] = ["ImageId"]
 STUB_FILE_NAME: str = "python_bindings/bandcamp_lib/bandcamp_lib.pyi"
 
@@ -57,7 +57,7 @@ def get_classes(file: str) -> list[Class]:
     current_lines: list[str] = []
     current_comments: str = ""
     for line in file.splitlines():
-        if "pub struct" in line:
+        if "pub struct" in line and "$" not in line:
             name = line.split("struct", 1)[-1].removesuffix("{").strip()
             current_class = Class(name, [], current_comments[1:] or None)
         elif line.startswith("///"):
@@ -88,6 +88,27 @@ def rust_doc_to_python(doc: str, indent: int = 2) -> str:
     return f'{indentation}"""{doc}"""\n\n'
 
 
+def handle_image_resolution(lines: list[str]) -> str:
+    if all("ImageResolution" not in line for line in lines):
+        return ""
+    result = "class ImageResolution:\n"
+    first_line: int = [i for i, line in enumerate(lines) if "ImageResolution" in line] [0]
+    comment: str = ""
+    for i in range(first_line + 1, len(lines)):
+        line: str = lines[i].strip()
+        if line.startswith("///"):
+            comment += "\n" + line.removeprefix("///").strip()
+        elif line.startswith("}"):
+            break
+        else:
+            result += "    " + line.removesuffix(",") + "\n"
+            if comment:
+                result += rust_doc_to_python(comment[1:], 1)
+                comment = ""
+    if not result.endswith("\n\n"):
+        result += "\n"
+    return result
+
 def main():
     with open(STUB_FILE_NAME) as f:
         old_content: str = f.read()
@@ -117,6 +138,7 @@ def main():
                     new_file += " ...\n"
             if not new_file.endswith("\n\n"):
                 new_file += "\n"
+        new_file += handle_image_resolution(lines.splitlines())
     if new_file.endswith("\n\n"):
         new_file = new_file[:-1]
     if new_file != old_content:
