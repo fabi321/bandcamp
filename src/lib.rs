@@ -17,7 +17,6 @@ pub use artist::{
     fetch_artist,
 };
 pub use error::Error;
-use lazy_static::lazy_static;
 pub use search::{
     BandcampUrl, SearchResultItem, SearchResultItemAlbum, SearchResultItemArtist,
     SearchResultItemFan, SearchResultItemTrack, search,
@@ -25,19 +24,9 @@ pub use search::{
 use snafu::OptionExt;
 pub use util::{AlbumImage, Image};
 
-lazy_static! {
-    static ref ARTIST_URL: Regex =
-        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
-    static ref ALBUM_URL: Regex =
-        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)")
-            .expect("invalid regex");
-    static ref TRACK_URL: Regex =
-        Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)")
-            .expect("invalid regex");
-}
-
 pub fn artist_from_url(url: &str) -> Result<Artist, Error> {
-    let caputres = ARTIST_URL.captures(url).with_context(|| InvalidUrlSnafu {
+    let artist_url = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com").expect("invalid regex");
+    let caputres = artist_url.captures(url).with_context(|| InvalidUrlSnafu {
         url: url.to_string(),
     })?;
     let search_result = search(&caputres[1])?;
@@ -55,7 +44,9 @@ pub fn artist_from_url(url: &str) -> Result<Artist, Error> {
 }
 
 pub fn album_from_url(url: &str) -> Result<Album, Error> {
-    let captures = ALBUM_URL.captures(url).with_context(|| InvalidUrlSnafu {
+    let album_url = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/album/([a-z-0-9]+)")
+        .expect("invalid regex");
+    let captures = album_url.captures(url).with_context(|| InvalidUrlSnafu {
         url: url.to_string(),
     })?;
     let query = format!("{} {}", &captures[1], &captures[2]);
@@ -77,7 +68,9 @@ pub fn album_from_url(url: &str) -> Result<Album, Error> {
 }
 
 pub fn track_from_url(url: &str) -> Result<Album, Error> {
-    let captures = TRACK_URL.captures(url).with_context(|| InvalidUrlSnafu {
+    let track_url = Regex::new("^(?:https?://)?([a-z]+).bandcamp.com/track/([a-z-0-9]+)")
+        .expect("invalid regex");
+    let captures = track_url.captures(url).with_context(|| InvalidUrlSnafu {
         url: url.to_string(),
     })?;
     let query = format!("{} {}", &captures[1], &captures[2]);
