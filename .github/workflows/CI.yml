@@ -37,9 +37,8 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         env:
-          OPENSSL_DIR: /usr
-          OPENSSL_INCLUDE_DIR: /usr/include
-          OPENSSL_LIB_DIR: /usr/lib
+          OPENSSL_INCLUDE_DIR: /usr/include/openssl
+          OPENSSL_LIB_DIR: /usr/lib/ssl
         with:
           before-script-linux: |
             # If we're running on rhel centos, install needed packages.
@@ -86,12 +85,12 @@ jobs:
         with:
           python-version: 3.x
       - name: Install OpenSSL
-        run: sudo apt update && sudo apt install libssl-dev openssl pkg-config
+        run: sudo apt update && sudo apt install -y libssl-dev openssl pkg-config
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           before-script-linux: |
-            apt update && apt install libssl-dev openssl pkg-config
+            apt update && apt install -y libssl-dev openssl pkg-config
           target: ${{ matrix.platform.target }}
           args: --manifest-path python_bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
