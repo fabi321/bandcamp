@@ -25,9 +25,11 @@ pub use util::{AlbumImage, Image, ImageResolution};
 
 lazy_static! {
     static ref BAND_ID: Regex =
-        Regex::new(r#""name":"band_id","value":([0-9]+)"#).expect("invalid regex");
+        Regex::new(r#"(?:"name":"band_id","value":|&amp;band_id=)([0-9]+)"#)
+            .expect("invalid regex");
     static ref ITEM_ID: Regex =
-        Regex::new(r#""name":"item_id","value":([0-9]+)"#).expect("invalid regex");
+        Regex::new(r#"(?:"name":"item_id","value":|&amp;item_id=)([0-9]+)"#)
+            .expect("invalid regex");
 }
 
 fn parse_captures(captures: &Captures) -> u64 {
@@ -86,6 +88,13 @@ mod tests {
     #[tokio::test]
     async fn test_get_artist_from_url() {
         artist_from_url("https://myrkur.bandcamp.com")
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_get_artist_from_url_other() {
+        artist_from_url("https://meschera.bandcamp.com")
             .await
             .unwrap();
     }
