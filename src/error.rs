@@ -11,7 +11,4 @@ pub enum Error {
     #[snafu(display("Could not find Artist/track/album with url: {url}"))]
     #[snafu(visibility(pub(crate)))]
     NotFoundError { url: String },
-    #[snafu(display("Invalid Artist/track/album url: {url}"))]
-    #[snafu(visibility(pub(crate)))]
-    InvalidUrlError { url: String },
 }
