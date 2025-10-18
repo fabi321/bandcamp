@@ -23,9 +23,9 @@ jobs:
       - name: Run codegen
         run: python3 codegen.py --check
       - name: Build
-        run: cargo build --verbose
+        run: cargo build
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test
 
   release:
     name: Release
@@ -34,8 +34,6 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v4
-      - name: Build release binary
-        run: cargo build --release
       - name: Publish to crates.io
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
