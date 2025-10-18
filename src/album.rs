@@ -31,6 +31,7 @@ pub struct Album {
     pub about: Option<String>,
     /// Credits for the album or track
     pub credits: Option<String>,
+    #[serde(deserialize_with = "crate::util::null_as_default")]
     pub tracks: Vec<AlbumTrack>,
     /// The track id of the featured track, if any
     pub featured_track: Option<u64>,
@@ -105,6 +106,7 @@ pub struct AlbumTrack {
     pub track_number: Option<u64>,
     /// Duration is undefined for unstreamable tracks or unreleased tracks
     pub duration: Option<f32>,
+    #[serde(deserialize_with = "crate::util::null_as_default")]
     pub streaming_url: HashMap<String, String>,
     pub band_id: u64,
     pub band_name: String,
@@ -179,5 +181,10 @@ mod tests {
     #[tokio::test]
     async fn test_geo_location() {
         fetch_track(989192576, 1585846251).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_non_streamable() {
+        fetch_album(2651853956, 1585219034).await.unwrap();
     }
 }

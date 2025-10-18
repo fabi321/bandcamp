@@ -16,6 +16,7 @@ pub struct Artist {
     pub bio: Option<String>,
     #[serde(rename = "bandcamp_url")]
     pub url: String,
+    #[serde(deserialize_with = "crate::util::null_as_default")]
     pub sites: Vec<ArtistSite>,
     pub location: Option<String>,
     pub discography: Vec<ArtistDiscographyEntry>,
