@@ -27,6 +27,9 @@ pub struct Album {
     pub album_id: Option<u64>,
     /// For a track belonging to an album
     pub album_title: Option<String>,
+    /// The album artist, may be different from the band name
+    #[serde(rename = "tralbum_artist")]
+    pub album_artist: String,
     /// About text for an album or track, explaining it a bit
     pub about: Option<String>,
     /// Credits for the album or track
@@ -164,27 +167,45 @@ mod tests {
     async fn test_meschera() {
         let result = fetch_album(3752216131, 83593492).await.unwrap();
         assert_eq!(result.title, "Legends of the Ancients".to_string());
+        // https://meschera.bandcamp.com/album/legends-of-the-ancients
     }
 
     #[tokio::test]
     async fn test_track() {
         let result = fetch_track(3752216131, 3279776665).await.unwrap();
         assert_eq!(result.title, "Children of the Ancient Forests".to_string());
+        // https://meschera.bandcamp.com/track/children-of-the-ancient-forests
     }
 
     #[tokio::test]
     async fn test_zaklyatie() {
         let result = fetch_track(3752216131, 2452065074).await.unwrap();
         assert_eq!(result.title, "Zaklyatie".to_string());
+        // https://meschera.bandcamp.com/track/zaklyatie
     }
 
     #[tokio::test]
     async fn test_geo_location() {
         fetch_track(989192576, 1585846251).await.unwrap();
+        // https://myrkur.bandcamp.com/track/like-humans
     }
 
     #[tokio::test]
     async fn test_non_streamable() {
         fetch_album(2651853956, 1585219034).await.unwrap();
+        // https://arkonamoscow.bandcamp.com/album/kob
+    }
+
+    #[tokio::test]
+    async fn test_album_tag() {
+        fetch_album(4189249078, 809750438).await.unwrap();
+        // https://bagira.bandcamp.com/album/-
+    }
+
+    #[tokio::test]
+    async fn test_album_artist() {
+        let result = fetch_album(1896332583, 2118497851).await.unwrap();
+        assert_ne!(result.band.name, result.album_artist);
+        // https://alkonostrussia.bandcamp.com/album/years-of-prophecy-anniversary-version-single
     }
 }
