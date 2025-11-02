@@ -84,17 +84,20 @@ mod tests {
     #[tokio::test]
     async fn test_grai() {
         fetch_artist(3250782803).await.unwrap();
+        // https://grai.bandcamp.com
     }
 
     #[tokio::test]
     async fn test_meschera() {
         fetch_artist(3752216131).await.unwrap();
+        // https://meschera.bandcamp.com
     }
 
     #[tokio::test]
     async fn test_bergfried() {
         let result = fetch_artist(3899303380).await.unwrap();
         assert!(result.location.is_none());
+        // https://bergfried.bandcamp.com
     }
 
     #[tokio::test]
@@ -102,5 +105,6 @@ mod tests {
         let result = fetch_artist(4115243786).await.unwrap();
         assert_eq!(result.name, "Napalm Records".to_string());
         assert!(!result.artists.is_empty());
+        // https://napalmrecords.bandcamp.com
     }
 }
