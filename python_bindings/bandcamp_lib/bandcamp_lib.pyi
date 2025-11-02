@@ -67,6 +67,10 @@ class Album:
         """For a track belonging to an album"""
 
     @property
+    def album_artist(self) -> str:
+        """The album artist, may be different from the band name"""
+
+    @property
     def about(self) -> Optional[str]:
         """About text for an album or track, explaining it a bit"""
 
