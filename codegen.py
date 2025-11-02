@@ -101,7 +101,7 @@ def handle_image_resolution(lines: list[str]) -> str:
         elif line.startswith("}"):
             break
         else:
-            result += "    " + line.removesuffix(",") + "\n"
+            result += "    " + line.split(" =")[0] + ": ImageResolution\n"
             if comment:
                 result += rust_doc_to_python(comment[1:], 1)
                 comment = ""

@@ -335,58 +335,58 @@ class SearchResultItemFan:
     def url(self) -> str: ...
 
 class ImageResolution:
-    Full = 0
-    Px25 = 22
-    Px50 = 42
-    Px60x45 = 140
-    Px40x80 = 161
-    Px90 = 101
-    Px60x100 = 160
-    Px100 = 3
-    Px100x75 = 29
-    Px120 = 21
-    Px124 = 8
-    Px135 = 15
-    Px138 = 12
-    Px140 = 50
-    Px144x108 = 38
-    Px150 = 7
-    Px168x126 = 37
-    Px172 = 11
-    Px180 = 206
-    Px200 = 44
-    Px210 = 9
-    Px210Gift = 165
+    Full: ImageResolution
+    Px25: ImageResolution
+    Px50: ImageResolution
+    Px60x45: ImageResolution
+    Px40x80: ImageResolution
+    Px90: ImageResolution
+    Px60x100: ImageResolution
+    Px100: ImageResolution
+    Px100x75: ImageResolution
+    Px120: ImageResolution
+    Px124: ImageResolution
+    Px135: ImageResolution
+    Px138: ImageResolution
+    Px140: ImageResolution
+    Px144x108: ImageResolution
+    Px150: ImageResolution
+    Px168x126: ImageResolution
+    Px172: ImageResolution
+    Px180: ImageResolution
+    Px200: ImageResolution
+    Px210: ImageResolution
+    Px210Gift: ImageResolution
     """Image with "Gift" in the top right hand corner"""
 
-    Px240 = 205
-    Px270 = 70
-    Px280 = 201
-    Px300 = 4
-    Px350 = 2
-    Px350Grayscale = 300
+    Px240: ImageResolution
+    Px270: ImageResolution
+    Px280: ImageResolution
+    Px300: ImageResolution
+    Px350: ImageResolution
+    Px350Grayscale: ImageResolution
     """Grayscale 350x350px image"""
 
-    Px360 = 204
-    Px368 = 14
-    Px368x276 = 33
-    Px380 = 13
-    Px380x285 = 32
-    Px400x300 = 36
-    Px420 = 200
-    Px422 = 170
-    Px540 = 71
-    Px640x124 = 120
-    Px646 = 171
-    Px700 = 5
-    Px715x402 = 27
-    Px768x432 = 28
-    Px800x600 = 26
-    Px900x468 = 220
-    Px975x180PNG = 100
-    Px1024 = 20
-    Px1024PNG = 31
-    Px1200 = 10
-    Px1280x720 = 150
-    Px720x1280 = 151
-    Px3000PNG = 1
+    Px360: ImageResolution
+    Px368: ImageResolution
+    Px368x276: ImageResolution
+    Px380: ImageResolution
+    Px380x285: ImageResolution
+    Px400x300: ImageResolution
+    Px420: ImageResolution
+    Px422: ImageResolution
+    Px540: ImageResolution
+    Px640x124: ImageResolution
+    Px646: ImageResolution
+    Px700: ImageResolution
+    Px715x402: ImageResolution
+    Px768x432: ImageResolution
+    Px800x600: ImageResolution
+    Px900x468: ImageResolution
+    Px975x180PNG: ImageResolution
+    Px1024: ImageResolution
+    Px1024PNG: ImageResolution
+    Px1200: ImageResolution
+    Px1280x720: ImageResolution
+    Px720x1280: ImageResolution
+    Px3000PNG: ImageResolution
